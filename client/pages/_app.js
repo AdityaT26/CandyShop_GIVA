@@ -1,6 +1,9 @@
 import NavBar from '../components/NavBar';
 import '../styles/globals.css';
 import { ThemeProvider } from 'next-themes';
+const dotenv = require('dotenv');
+
+require('dotenv').config();
 
 function MyApp({ Component, pageProps }) {
   return (
