@@ -73,6 +73,12 @@ cd ../server
 npm install
 ```
 
+You can use
+```bash
+--legacy-peer-deps
+```
+as a parameter if there is a compatibility issue with the packages.
+
 * Create a *.env* file in the *server* folder and add the following environment variables:
 
 ```bash
