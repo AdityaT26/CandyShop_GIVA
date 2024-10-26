@@ -1,147 +1,166 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function ManageProducts() {
   const [products, setProducts] = useState([]);
-  const [productName, setProductName] = useState('');
-  const [productPrice, setProductPrice] = useState('');
-  const [productQuantity, setProductQuantity] = useState('');
-  const [productCategory, setProductCategory] = useState('');
-
-  const categories = [
-    'Chocolate',
-    'Sweet Candy',
-    'Sour Candy',
-    'Caramel and Toffee',
-    'Nostalgic Candies',
-    'Gourmet Lollipops',
-  ];
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [category, setCategory] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/products');
-        setProducts(res.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
     fetchProducts();
   }, []);
 
-  const handleAddProduct = async (e) => {
-    e.preventDefault();
-
-    const newProduct = {
-      name: productName,
-      price: parseFloat(productPrice),
-      quantity: parseInt(productQuantity, 10),
-      category: productCategory,
-    };
-
-    if (!newProduct.name || !newProduct.price || !newProduct.quantity || !newProduct.category) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-
-    const token = localStorage.getItem('token');
-
+  const fetchProducts = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/products', newProduct, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      setProducts([...products, res.data]);
-      setProductName('');
-      setProductPrice('');
-      setProductQuantity('');
-      setProductCategory('');
+      const res = await axios.get('http://localhost:5000/api/products');
+      setProducts(res.data);
     } catch (error) {
-      console.error("Error adding product:", error);
-      if (error.response && error.response.status === 400) {
-        alert("Bad Request! Please check your input data.");
-      } else if (error.response && error.response.status === 401) {
-        alert("Unauthorized! Please log in.");
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (editMode) {
+      // Update product
+      try {
+        await axios.put(`http://localhost:5000/api/products/${editId}`, {
+          name,
+          price,
+          quantity,
+          category,
+        });
+        setEditMode(false);
+        setEditId(null);
+      } catch (error) {
+        console.error('Error updating product:', error);
+      }
+    } else {
+      // Add new product
+      try {
+        await axios.post('http://localhost:5000/api/products', {
+          name,
+          price,
+          quantity,
+          category,
+        });
+      } catch (error) {
+        console.error('Error adding product:', error);
       }
     }
+    fetchProducts();
+    clearForm();
+  };
+
+  const handleEdit = (product) => {
+    setEditMode(true);
+    setEditId(product.id);
+    setName(product.name);
+    setPrice(product.price);
+    setQuantity(product.quantity);
+    setCategory(product.category);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/products/${id}`);
+      fetchProducts();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  };
+
+  const clearForm = () => {
+    setName('');
+    setPrice('');
+    setQuantity('');
+    setCategory('');
+    setEditMode(false);
+    setEditId(null);
   };
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-primary-light dark:bg-primary-dark rounded-lg shadow-md text-highlight dark:text-highlight-dark">
       <h1 className="text-3xl font-bold mb-4 text-center">Manage Products</h1>
-      <form onSubmit={handleAddProduct} className="bg-lightBlue p-6 rounded-lg mb-8 shadow">
-        <div className="mb-4">
-          <label className="block text-highlight mb-2" htmlFor="productName">Product Name</label>
-          <input 
-            type="text" 
-            id="productName" 
-            className="input-style" 
-            placeholder="Enter product name"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
+      <form onSubmit={handleSubmit} className="mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input
+            type="text"
+            placeholder="Product Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
+            className="p-4 rounded-lg bg-white text-textPrimary shadow-md"
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-highlight mb-2" htmlFor="productPrice">Product Price</label>
-          <input 
-            type="number" 
-            id="productPrice" 
-            className="input-style" 
-            placeholder="Enter product price"
-            value={productPrice}
-            onChange={(e) => setProductPrice(e.target.value)}
+          <input
+            type="number"
+            placeholder="Price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
             required
+            className="p-4 rounded-lg bg-white text-textPrimary shadow-md"
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-highlight mb-2" htmlFor="productQuantity">Product Quantity</label>
-          <input 
-            type="number" 
-            id="productQuantity" 
-            className="input-style" 
-            placeholder="Enter product quantity"
-            value={productQuantity}
-            onChange={(e) => setProductQuantity(e.target.value)}
+          <input
+            type="number"
+            placeholder="Quantity"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
             required
+            className="p-4 rounded-lg bg-white text-textPrimary shadow-md"
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-highlight mb-2" htmlFor="productCategory">Product Category</label>
-          <select 
-            id="productCategory" 
-            className="input-style"
-            value={productCategory}
-            onChange={(e) => setProductCategory(e.target.value)}
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             required
+            className="p-4 rounded-lg bg-white text-textPrimary shadow-md"
           >
-            <option value="" disabled>Select a category</option>
-            {categories.map((category, index) => (
-              <option key={index} value={category}>{category}</option>
-            ))}
+            <option value="" disabled>Select Category</option>
+            <option value="Chocolate">Chocolate</option>
+            <option value="Sweet Candy">Sweet Candy</option>
+            <option value="Sour Candy">Sour Candy</option>
+            <option value="Caramel and Toffee">Caramel and Toffee</option>
+            <option value="Nostalgic Candies">Nostalgic Candies</option>
+            <option value="Gourmet Lollipops">Gourmet Lollipops</option>
           </select>
         </div>
-        <button type="submit" className="candy-button">Add Product</button>
+        <button
+          type="submit"
+          className="mt-4 px-6 py-3 bg-accent text-white rounded-full shadow-lg hover:bg-highlight transition-all duration-200"
+        >
+          {editMode ? 'Update Product' : 'Add Product'}
+        </button>
       </form>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Product List */}
+      <h2 className="text-2xl font-bold mb-4">Products</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-          <motion.div 
-            key={product.id} 
-            className="p-4 bg-card-light dark:bg-card-dark rounded-lg shadow"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h2 className="text-xl font-bold">{product.name}</h2>
-            <p className="text-lg">Price: ${product.price}</p>
-            <p className="text-lg">Category: {product.category}</p>
-            <p className="text-lg">Quantity: {product.quantity}</p>
-            <button className="candy-button mt-2">Delete</button>
-          </motion.div>
+          <div key={product.id} className="bg-white rounded-lg shadow-lg p-5 text-textPrimary flex flex-col">
+            <h3 className="text-xl font-bold">{product.name}</h3>
+            <p className="text-gray-600">${product.price.toFixed(2)}</p>
+            <p className="text-sm font-light text-gray-500 mt-1">{product.category}</p>
+            <p className="text-sm font-light text-gray-500 mt-1">
+              Available: {product.quantity} in stock
+            </p>
+            <div className="mt-4 flex space-x-2">
+              <button
+                className="px-4 py-2 bg-accent text-white rounded-full shadow-md hover:bg-highlight transition-all duration-200"
+                onClick={() => handleEdit(product)}
+              >
+                Edit
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded-full shadow-md hover:bg-red-600 transition-all duration-200"
+                onClick={() => handleDelete(product.id)}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         ))}
       </div>
     </div>
