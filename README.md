@@ -79,7 +79,7 @@ You can use
 ```
 as a parameter if there is a compatibility issue with the packages.
 
-* Create a *.env* file in the *server* folder and add the following environment variables:
+* Create a *.env* file in the *server* and *client* folder and add the following environment variables:
 
 ```bash
 PORT=5000
