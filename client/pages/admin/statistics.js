@@ -1,52 +1,90 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
-import axios from 'axios';
+import {
+  Chart,
+  ArcElement,
+  Tooltip,
+  Legend
+} from 'chart.js'; // Import directly from chart.js
 
-export default function Statistics() {
-  const [statistics, setStatistics] = useState({});
+// Register the necessary components
+Chart.register(ArcElement, Tooltip, Legend);
 
+const Statistics = () => {
+  const [categoryChartData, setCategoryChartData] = useState(null);
+  const [priceChartData, setPriceChartData] = useState(null);
+  const [stockChartData, setStockChartData] = useState(null);
+
+  // Hardcoded data
   useEffect(() => {
-    const fetchStatistics = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/products');
-        const data = res.data;
-
-        const categories = [...new Set(data.map(product => product.category))];
-        const quantities = categories.map(category => {
-          return data.filter(product => product.category === category).reduce((acc, curr) => acc + curr.quantity, 0);
-        });
-
-        setStatistics({
-          labels: categories,
-          datasets: [
-            {
-              data: quantities,
-              backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-            },
-          ],
-        });
-      } catch (error) {
-        console.error('Error fetching statistics:', error);
-      }
+    const categories = {
+      "Chocolate": 16,
+      "Sour Candy": 16,
+      "Caramel and Toffee": 16,
+      "Gourmet Lollipops": 16,
+      "Sweet Candy": 17,
+      "Nostalgic Candies": 15
     };
+    const categoryLabels = Object.keys(categories);
+    const categoryValues = Object.values(categories);
 
-    fetchStatistics();
+    setCategoryChartData({
+      labels: categoryLabels,
+      datasets: [{
+        data: categoryValues,
+        backgroundColor: [
+          '#FF6384', // Chocolate
+          '#36A2EB', // Sour Candy
+          '#FFCE56', // Caramel and Toffee
+          '#4BC0C0', // Gourmet Lollipops
+          '#9966FF', // Sweet Candy
+          '#FF9F40', // Nostalgic Candies
+        ],
+      }],
+    });
+
+    setPriceChartData({
+      labels: ['Low', 'Medium', 'High'],
+      datasets: [{
+        data: [87, 9, 0],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+      }],
+    });
+
+    setStockChartData({
+      labels: ['Low Stock', 'Medium Stock', 'High Stock'],
+      datasets: [{
+        data: [1, 78, 17],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+      }],
+    });
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-primary-light dark:bg-primary-dark rounded-lg shadow-md text-highlight dark:text-highlight-dark">
-      <h1 className="text-3xl font-bold mb-4 text-center">Product Statistics</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <motion.div
-          className="p-6 bg-card-light dark:bg-card-dark rounded-lg shadow"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <h2 className="text-xl font-bold mb-4">Category Distribution</h2>
-          <Pie data={statistics} />
-        </motion.div>
+    <div className="flex flex-col items-center p-8 bg-gradient-to-b from-[#C4D7FF] to-[#FFF4B5] min-h-screen">
+      <h1 className="text-4xl font-bold text-[#87A2FF] mb-8">Statistics</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+        <div className="bg-white shadow-lg rounded-lg p-4">
+          <h2 className="text-xl font-semibold text-center text-[#87A2FF]">Category Distribution</h2>
+          <div className="flex justify-center">
+            {categoryChartData ? <Pie data={categoryChartData} height={200} width={200} /> : <p>Loading...</p>}
+          </div>
+        </div>
+        <div className="bg-white shadow-lg rounded-lg p-4">
+          <h2 className="text-xl font-semibold text-center text-[#87A2FF]">Price Distribution</h2>
+          <div className="flex justify-center">
+            {priceChartData ? <Pie data={priceChartData} height={200} width={200} /> : <p>Loading...</p>}
+          </div>
+        </div>
+        <div className="bg-white shadow-lg rounded-lg p-4">
+          <h2 className="text-xl font-semibold text-center text-[#87A2FF]">Stock Distribution</h2>
+          <div className="flex justify-center">
+            {stockChartData ? <Pie data={stockChartData} height={200} width={200} /> : <p>Loading...</p>}
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Statistics;
