@@ -1,13 +1,11 @@
-// productRoutes.js
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController'); 
-const { authenticateToken, authorizeAdmin } = require('../middleware/authMiddleware'); // Destructure here
 
-// Define the routes
+// Define the routes without authentication
 router.get('/products', productController.getProducts);
-router.post('/products', authenticateToken, productController.addProduct);
-router.put('/products/:id', authenticateToken, productController.updateProduct);
-router.delete('/products/:id', authenticateToken, productController.deleteProduct);
+router.post('/products', productController.addProduct); // Allow adding products without authentication
+router.put('/products/:id', productController.updateProduct); // Allow updating products without authentication
+router.delete('/products/:id', productController.deleteProduct); // Allow deleting products without authentication
 
 module.exports = router;
