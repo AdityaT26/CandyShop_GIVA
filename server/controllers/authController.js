@@ -1,38 +1,75 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, 'your_jwt_secret', { expiresIn: '1h' });
-};
+// Get products with optional search functionality
+exports.getProducts = async (req, res) => {
+  const { search } = req.query;
+  let query = 'SELECT * FROM products';
+  const params = [];
 
-exports.register = async (req, res) => {
-  const { username, password } = req.body;
+  if (search) {
+    query += ' WHERE name ILIKE $1';
+    params.push(`%${search}%`);
+  }
+
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const result = await pool.query(
-      'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *',
-      [username, hashedPassword]
-    );
-    res.json(result.rows[0]);
+    const result = await pool.query(query, params);
+    res.json(result.rows);
   } catch (error) {
+    console.error('Error fetching products:', error);
     res.status(500).send('Server error');
   }
 };
 
-exports.login = async (req, res) => {
-  const { username, password } = req.body;
+// Add a new product
+exports.addProduct = async (req, res) => {
+  console.log("Received data:", req.body);
+  const { name, price, quantity, category } = req.body; 
   try {
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-    if (result.rows.length === 0) return res.status(400).send('User not found');
-    
-    const user = result.rows[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).send('Invalid credentials');
-    
-    const token = generateToken(user.id);
-    res.json({ token });
+    const result = await pool.query(
+      'INSERT INTO products (name, price, quantity, category) VALUES ($1, $2, $3, $4) RETURNING *',
+      [name, price, quantity, category]
+    );
+    res.status(201).json(result.rows[0]);
   } catch (error) {
+    console.error('Error adding product:', error);
+    res.status(500).send('Server error');
+  }
+};
+
+// Update an existing product
+exports.updateProduct = async (req, res) => {
+  const { id } = req.params;
+  const { name, price, quantity, category } = req.body; 
+  try {
+    const result = await pool.query(
+      'UPDATE products SET name = $1, price = $2, quantity = $3, category = $4 WHERE id = $5 RETURNING *',
+      [name, price, quantity, category, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('Product not found');
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating product:', error);
+    res.status(500).send('Server error');
+  }
+};
+
+// Delete a product
+exports.deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('DELETE FROM products WHERE id = $1', [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send('Product not found');
+    }
+
+    res.send('Product deleted');
+  } catch (error) {
+    console.error('Error deleting product:', error);
     res.status(500).send('Server error');
   }
 };
