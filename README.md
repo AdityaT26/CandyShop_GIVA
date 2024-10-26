@@ -14,13 +14,11 @@ A candy shop web application with a fun, candy-themed design. The app allows use
 - **User**: Browse and view candy products with price and quantity information.
 - **Admin**: Add, update, and delete products; view sales statistics.
 - **Dark Mode**: Switch between light and dark themes for a smooth viewing experience.
-- **Authentication**: JWT-based user authentication for login and registration.
 
 ## Tech Stack
 
 - **Frontend**: Next.js, React, Tailwind CSS
 - **Backend**: Express, Node.js, PostgreSQL
-- **Authentication**: JWT (JSON Web Token)
 - **Testing**: Jest, Supertest
 
 ## Project Structure
