@@ -1,16 +1,9 @@
-// db.js
 const { Pool } = require('pg');
-const dotenv = require('dotenv');
-
-// Load environment variables from .env file
-dotenv.config();
-
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  user: process.env.DB_USER || 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  database: process.env.DB_NAME || 'giva_products',
+  password: process.env.DB_PASSWORD || '#Netgear338',
+  port: process.env.DB_PORT || 5432,
 });
-
 module.exports = pool;
