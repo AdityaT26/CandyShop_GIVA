@@ -1,7 +1,8 @@
-const pool = require('../config/db');
+const pool = require('../config/db'); // Ensure this path is correct
 
 // Get products with optional search functionality
 exports.getProducts = async (req, res) => {
+  console.log("Getting products");
   const { search } = req.query;
   let query = 'SELECT * FROM products';
   const params = [];
@@ -22,7 +23,13 @@ exports.getProducts = async (req, res) => {
 
 // Add a new product
 exports.addProduct = async (req, res) => {
-  const { name, price, quantity, category } = req.body; 
+  const { name, price, quantity, category } = req.body;
+
+  // Validate the input data
+  if (!name || !price || !quantity || !category) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
   try {
     const result = await pool.query(
       'INSERT INTO products (name, price, quantity, category) VALUES ($1, $2, $3, $4) RETURNING *',
@@ -38,7 +45,13 @@ exports.addProduct = async (req, res) => {
 // Update an existing product
 exports.updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, price, quantity, category } = req.body; 
+  const { name, price, quantity, category } = req.body;
+
+  // Validate the input data
+  if (!name || !price || !quantity || !category) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
   try {
     const result = await pool.query(
       'UPDATE products SET name = $1, price = $2, quantity = $3, category = $4 WHERE id = $5 RETURNING *',
@@ -71,4 +84,21 @@ exports.deleteProduct = async (req, res) => {
     console.error('Error deleting product:', error);
     res.status(500).send('Server error');
   }
+};
+
+// Get statistics for products
+exports.getStatistics = async (req, res) => {
+  res.status(200).json({
+    categories: { "Candy": 5, "Chocolate": 3 },
+    priceDistribution: { low: 2, medium: 4, high: 2 },
+    stockDistribution: { lowStock: 1, mediumStock: 4, highStock: 5 },
+  });
+};
+
+module.exports = { 
+  getProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  getStatistics,
 };
