@@ -82,7 +82,6 @@ DB_PORT=5432
 DB_USER=your_database_username
 DB_PASSWORD=your_database_password
 DB_NAME=candyshop
-JWT_SECRET=your_jwt_secret_key
 ```
 
 * Database Setup - Open PostgreSQL and create a new database:
