@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom font and global styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--tw-bg-color);
+  color: var(--tw-text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+:root {
+    --bg-primary-light: #c4d7ff;
+    --bg-primary-dark: #2a3f5c;
+    --text-highlight-light: #3d3d3d;
+    --text-highlight-dark: #ffffff;
+    --card-light: #ffd7c4;
+    --card-dark: #333333;
+  }
+  
+  .bg-primary-light {
+    background-color: var(--bg-primary-light);
+  }
+  .bg-primary-dark {
+    background-color: var(--bg-primary-dark);
+  }
+  .text-highlight {
+    color: var(--text-highlight-light);
+  }
+  .dark .text-highlight {
+    color: var(--text-highlight-dark);
+  }
+  
+  .bg-card-light {
+    background-color: var(--card-light);
+  }
+  .bg-card-dark {
+    background-color: var(--card-dark);
+  }
+  
+  .input-style {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #3d3d3d;
+  }
+  
+  .candy-button {
+    background-color: #ffd7c4;
+    color: #3d3d3d;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: transform 0.2s;
+  }
+  
+  .candy-button:hover {
+    transform: scale(1.05);
+  }
+  
+  .dark .candy-button {
+    background-color: #ffa7a0;
+  }
+  
