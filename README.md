@@ -112,6 +112,13 @@ CREATE TABLE public.products (
     quantity INTEGER,
     category TEXT
 );
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE
+);
 ```
 Set up the tables in the database by running migrations or using SQL statements if provided in any setup files.
 
