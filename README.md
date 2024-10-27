@@ -74,10 +74,12 @@ cd CandyShop_GIVA
 # In the client folder
 cd client
 npm install
+npm install dotenv --legacy-peer-deps
 
 # In the server folder
 cd ../server
 npm install
+npm install dotenv --legacy-peer-deps
 ```
 
 You can use
