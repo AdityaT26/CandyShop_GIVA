@@ -90,10 +90,18 @@ DB_PASSWORD=your_database_password
 DB_NAME=candyshop
 ```
 
-* Database Setup - Open PostgreSQL and create a new database:
+* Database Setup - Open PostgreSQL and create a new database and the products table:
 
 ```bash
 CREATE DATABASE candyshop;
+\c candyshop;
+CREATE TABLE public.products (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    price DOUBLE PRECISION,
+    quantity INTEGER,
+    category TEXT
+);
 ```
 Set up the tables in the database by running migrations or using SQL statements if provided in any setup files.
 
