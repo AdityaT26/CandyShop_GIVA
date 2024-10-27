@@ -1,7 +1,7 @@
 
 # React.JS, Node.JS and Next.JS simple website
 
-This project has no node_modules uploaded on github as they were very large for git to store.
+This project has no node_modules uploaded on github as they were very large for git to store, use npm install as instructed below.
 
 
 # CandyShop - GIVA
